@@ -1,5 +1,7 @@
 import type { DesignIR, ColorToken, TypographyToken, ComponentRecipe } from './types.js';
 
+export { renderDiffMarkdown } from './diff-render.js';
+
 export interface DesignDiff {
   colors: TokenDiff<ColorToken>;
   typography: TokenDiff<TypographyToken>;
@@ -91,96 +93,4 @@ function diffVariables(
   }
 
   return { added, removed, changed };
-}
-
-/**
- * Render a diff as a markdown report.
- */
-export function renderDiffMarkdown(diff: DesignDiff, urlA: string, urlB: string): string {
-  const s: string[] = [];
-
-  s.push(`# Design Diff Report`);
-  s.push('');
-  s.push(`| | Source A | Source B |`);
-  s.push(`|---|---|---|`);
-  s.push(`| URL | ${urlA} | ${urlB} |`);
-  s.push('');
-  s.push(`## Summary: **${diff.summary.verdict}** changes`);
-  s.push('');
-  s.push(`- **${diff.summary.addedCount}** added`);
-  s.push(`- **${diff.summary.removedCount}** removed`);
-  s.push(`- **${diff.summary.changedCount}** changed`);
-  s.push(`- **${diff.summary.totalChanges}** total`);
-  s.push('');
-
-  // Colors
-  if (diff.colors.added.length || diff.colors.removed.length) {
-    s.push(`## Colors`);
-    s.push('');
-    if (diff.colors.added.length) {
-      s.push(`### Added`);
-      for (const c of diff.colors.added) s.push(`- \`${c.hex}\` (${c.role})`);
-      s.push('');
-    }
-    if (diff.colors.removed.length) {
-      s.push(`### Removed`);
-      for (const c of diff.colors.removed) s.push(`- \`${c.hex}\` (${c.role})`);
-      s.push('');
-    }
-  }
-
-  // Typography
-  if (diff.typography.added.length || diff.typography.removed.length) {
-    s.push(`## Typography`);
-    s.push('');
-    if (diff.typography.added.length) {
-      s.push(`### Added`);
-      for (const t of diff.typography.added) s.push(`- ${t.family} ${t.size}px/${t.weight} (${t.role})`);
-      s.push('');
-    }
-    if (diff.typography.removed.length) {
-      s.push(`### Removed`);
-      for (const t of diff.typography.removed) s.push(`- ${t.family} ${t.size}px/${t.weight} (${t.role})`);
-      s.push('');
-    }
-  }
-
-  // Components
-  if (diff.components.added.length || diff.components.removed.length) {
-    s.push(`## Components`);
-    s.push('');
-    if (diff.components.added.length) {
-      s.push(`### Added`);
-      for (const c of diff.components.added) s.push(`- ${c.name} (${c.type})`);
-      s.push('');
-    }
-    if (diff.components.removed.length) {
-      s.push(`### Removed`);
-      for (const c of diff.components.removed) s.push(`- ${c.name} (${c.type})`);
-      s.push('');
-    }
-  }
-
-  // Variables
-  if (diff.variables.added.length || diff.variables.removed.length || diff.variables.changed.length) {
-    s.push(`## CSS Variables`);
-    s.push('');
-    if (diff.variables.added.length) {
-      s.push(`### Added`);
-      for (const v of diff.variables.added) s.push(`- \`${v}\``);
-      s.push('');
-    }
-    if (diff.variables.removed.length) {
-      s.push(`### Removed`);
-      for (const v of diff.variables.removed) s.push(`- \`${v}\``);
-      s.push('');
-    }
-    if (diff.variables.changed.length) {
-      s.push(`### Changed`);
-      for (const v of diff.variables.changed) s.push(`- \`${v.name}\`: \`${v.before}\` → \`${v.after}\``);
-      s.push('');
-    }
-  }
-
-  return s.join('\n');
 }
