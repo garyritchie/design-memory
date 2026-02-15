@@ -1,0 +1,65 @@
+import { z } from 'zod';
+import type { ScreenshotResult } from '../acquire/screenshots.js';
+import type { LayoutSpec } from './layout.spec.js';
+
+export function fixLayoutSpec(
+  parsed: any,
+  screenshot: ScreenshotResult,
+  schema: z.ZodSchema<LayoutSpec>
+): LayoutSpec {
+  const fixed: any = parsed;
+
+  if (!fixed.viewport && screenshot) {
+    fixed.viewport = { width: screenshot.width, height: screenshot.height };
+  }
+
+  if (!fixed.container) {
+    fixed.container = {};
+  }
+
+  if (fixed.sections && Array.isArray(fixed.sections)) {
+    fixed.sections = fixed.sections.map((s: any, index: number) => {
+      if (!s.position) {
+        s.position = { vertical: 'middle', horizontal: 'full-width', order: index };
+      }
+      if (!s.layout) {
+        s.layout = { pattern: 'single' };
+      }
+      if (s.layout && s.layout.alignment) {
+        const validAlignments = ['start', 'center', 'end', 'stretch', 'space-between', 'left', 'right', 'justify'];
+        if (!validAlignments.includes(s.layout.alignment)) {
+          s.layout.alignment = 'center';
+        }
+      }
+      if (s.layout && s.layout.pattern) {
+        const validPatterns = ['single', 'row', 'column', 'grid', 'flex', 'centered'];
+        if (!validPatterns.includes(s.layout.pattern)) {
+          s.layout.pattern = 'single';
+        }
+      }
+      if (s.position && s.position.vertical) {
+        const validVertical = ['top', 'middle', 'bottom'];
+        if (!validVertical.includes(s.position.vertical)) {
+          s.position.vertical = 'middle';
+        }
+      }
+      if (s.position && s.position.horizontal) {
+        const validHorizontal = ['left', 'center', 'right', 'full-width'];
+        if (!validHorizontal.includes(s.position.horizontal)) {
+          s.position.horizontal = 'full-width';
+        }
+      }
+      if (s.type) {
+        const validTypes = ['header', 'navigation', 'hero', 'section', 'sidebar', 'footer', 'card', 'button', 'text', 'image'];
+        if (!validTypes.includes(s.type)) {
+          s.type = 'section';
+        }
+      } else {
+        s.type = 'section';
+      }
+      return s;
+    });
+  }
+
+  return schema.parse(fixed);
+}

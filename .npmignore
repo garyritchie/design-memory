@@ -1,0 +1,13 @@
+src/
+tests/
+*.test.ts
+*.test.js
+.github/
+scripts/
+tsconfig.json
+.eslintrc.json
+.prettierrc.json
+vitest.config.ts
+.gitignore
+README.md
+PRD.md

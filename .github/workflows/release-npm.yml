@@ -1,0 +1,172 @@
+name: Release npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
+      dry_run:
+        description: 'Dry run (build and test only, no publish)'
+        required: false
+        default: true
+        type: boolean
+  push:
+    tags:
+      - 'design-memory-v*'
+
+jobs:
+  # ============================================================
+  # Job 1: Version Validation
+  # ============================================================
+  version-check:
+    name: Validate Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      dry_run: ${{ steps.version.outputs.dry_run }}
+    steps:
+      - name: Parse version
+        id: version
+        run: |
+          # Determine version from input or tag
+          if [[ -n "${{ inputs.version }}" ]]; then
+            VERSION="${{ inputs.version }}"
+            DRY_RUN="${{ inputs.dry_run }}"
+          else
+            # Extract from tag: design-memory-v1.2.3 → 1.2.3
+            VERSION="${GITHUB_REF_NAME#design-memory-v}"
+            DRY_RUN="false"
+          fi
+
+          # Validate SemVer
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "::error::Invalid version format: $VERSION (expected X.Y.Z or X.Y.Z-prerelease)"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "dry_run=$DRY_RUN" >> $GITHUB_OUTPUT
+          echo "✅ Version: $VERSION (dry_run: $DRY_RUN)"
+
+      - name: Check npm registry
+        run: |
+          if npm view design-memory@${{ steps.version.outputs.version }} version 2>/dev/null; then
+            echo "::error::Version ${{ steps.version.outputs.version }} already exists on npm!"
+            exit 1
+          fi
+          echo "✅ Version ${{ steps.version.outputs.version }} is available on npm"
+
+  # ============================================================
+  # Job 2: Test
+  # ============================================================
+  test:
+    name: Test
+    needs: version-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright Chromium
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-chromium-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm run test -- --run
+
+      - name: Check LOC
+        run: npm run check-loc
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Integration tests
+        run: npm run test:integration
+
+  # ============================================================
+  # Job 3: Publish
+  # ============================================================
+  publish:
+    name: Publish
+    needs: [version-check, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Set version
+        run: npm version ${{ needs.version-check.outputs.version }} --no-git-tag-version --allow-same-version
+
+      - name: Dry run — pack and inspect
+        if: needs.version-check.outputs.dry_run == 'true'
+        run: |
+          npm pack
+          TARBALL=$(ls -1 *.tgz | head -1)
+          echo "📦 Package: $TARBALL"
+          echo ""
+          echo "=== Contents ==="
+          tar -tzf "$TARBALL"
+          echo ""
+          SIZE=$(ls -lh "$TARBALL" | awk '{print $5}')
+          echo "=== Size: $SIZE ==="
+
+      - name: Publish to npm
+        if: needs.version-check.outputs.dry_run == 'false'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ============================================================
+  # Job 4: Summary
+  # ============================================================
+  summary:
+    name: Release Summary
+    needs: [version-check, test, publish]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## design-memory npm Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ needs.version-check.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dry Run | ${{ needs.version-check.outputs.dry_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version Check | ${{ needs.version-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Publish | ${{ needs.publish.result }} |" >> $GITHUB_STEP_SUMMARY
