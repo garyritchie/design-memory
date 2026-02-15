@@ -13,7 +13,7 @@ const MARKER = '/* design-memory tokens */';
  */
 export async function writeTokensToProject(
   ctx: ProjectContext,
-  tokens: ExtractedTokens,
+  tokens: ExtractedTokens
 ): Promise<string[]> {
   const written: string[] = [];
 

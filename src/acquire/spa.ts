@@ -39,7 +39,10 @@ export async function waitForSPA(page: Page, logger?: Logger): Promise<void> {
       }
 
       // Svelte
-      if (document.querySelector('[data-sveltekit-hydrate]') || document.querySelector('.svelte-')) {
+      if (
+        document.querySelector('[data-sveltekit-hydrate]') ||
+        document.querySelector('.svelte-')
+      ) {
         return 'svelte';
       }
 

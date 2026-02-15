@@ -7,7 +7,10 @@ export interface LayoutElement {
   bounds: { x: number; y: number; width: number; height: number };
 }
 
-export async function extractLayoutStructure(url: string, browser?: Browser): Promise<LayoutElement[]> {
+export async function extractLayoutStructure(
+  url: string,
+  browser?: Browser
+): Promise<LayoutElement[]> {
   const ownBrowser = !browser;
   if (!browser) {
     browser = await launchBrowser();
@@ -25,8 +28,14 @@ export async function extractLayoutStructure(url: string, browser?: Browser): Pr
       const semanticTags = ['header', 'nav', 'main', 'aside', 'section', 'footer', 'article'];
       const getLabel = (el: Element): string => {
         const tag = el.tagName.toLowerCase();
-        const labels: Record<string, string> = { header: 'Header', nav: 'Navigation', main: 'Main', aside: 'Sidebar', footer: 'Footer' };
-        if (labels[tag]) return labels[tag]!;
+        const labels: Record<string, string> = {
+          header: 'Header',
+          nav: 'Navigation',
+          main: 'Main',
+          aside: 'Sidebar',
+          footer: 'Footer',
+        };
+        if (labels[tag]) return labels[tag];
         if (tag === 'section') {
           const text = el.textContent?.trim().slice(0, 30) || '';
           return text ? `Section: ${text}` : 'Section';
@@ -34,7 +43,11 @@ export async function extractLayoutStructure(url: string, browser?: Browser): Pr
         return tag;
       };
       const isSignificant = (el: Element, rect: DOMRect): boolean => {
-        return semanticTags.includes(el.tagName.toLowerCase()) || (rect.width > 300 && rect.height > 150) || (rect.width > 200 && rect.height > 300);
+        return (
+          semanticTags.includes(el.tagName.toLowerCase()) ||
+          (rect.width > 300 && rect.height > 150) ||
+          (rect.width > 200 && rect.height > 300)
+        );
       };
 
       const elements: LayoutElement[] = [];
@@ -50,7 +63,12 @@ export async function extractLayoutStructure(url: string, browser?: Browser): Pr
             elements.push({
               tag: el.tagName.toLowerCase(),
               selector: label,
-              bounds: { x: Math.round(rect.x), y: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) },
+              bounds: {
+                x: Math.round(rect.x),
+                y: Math.round(rect.y),
+                width: Math.round(rect.width),
+                height: Math.round(rect.height),
+              },
             });
             seen.add(key);
           }

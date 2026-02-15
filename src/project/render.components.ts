@@ -4,8 +4,7 @@ export function renderComponents(ir: DesignIR): string {
   const components = ir.components
     .map((c) => {
       const doList = c.do.length > 0 ? c.do.map((d) => `  - ✅ ${d}`).join('\n') : '';
-      const dontList =
-        c.dont.length > 0 ? c.dont.map((d) => `  - ❌ ${d}`).join('\n') : '';
+      const dontList = c.dont.length > 0 ? c.dont.map((d) => `  - ❌ ${d}`).join('\n') : '';
 
       return `## ${c.name} (${c.type})
 

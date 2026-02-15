@@ -9,9 +9,10 @@ export function renderColorPaletteSkill(ir: DesignIR): string {
     return `| \`${c.hex}\` | ${c.role} | ${usage} |`;
   });
 
-  const colorVars = ir.variables?.filter((v) =>
-    /color|bg|primary|accent|surface|text|muted|brand|theme/i.test(v.name)
-  ) ?? [];
+  const colorVars =
+    ir.variables?.filter((v) =>
+      /color|bg|primary|accent|surface|text|muted|brand|theme/i.test(v.name)
+    ) ?? [];
 
   return `---
 name: color-palette

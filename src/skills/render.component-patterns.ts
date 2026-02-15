@@ -16,7 +16,9 @@ description: Component recipes with code examples. Replicate these exact pattern
 `);
 
   if (ir.components.length === 0) {
-    sections.push('No components detected. Build components using the design tokens from `design-system.md`.\n');
+    sections.push(
+      'No components detected. Build components using the design tokens from `design-system.md`.\n'
+    );
     return sections.join('\n');
   }
 
@@ -61,7 +63,7 @@ description: Component recipes with code examples. Replicate these exact pattern
 function generateComponentSnippet(
   name: string,
   styles: Record<string, string>,
-  isTailwind: boolean,
+  isTailwind: boolean
 ): string | null {
   const bg = styles.backgroundColor ?? '';
   const color = styles.color ?? '';
@@ -95,7 +97,10 @@ function generateComponentSnippet(
 function extractKeyStyles(styles: Record<string, string>): { prop: string; value: string }[] {
   const skip = ['display', 'width', 'maxWidth'];
   return Object.entries(styles)
-    .filter(([prop, val]) => val && val !== 'none' && val !== 'normal' && val !== '0px' && !skip.includes(prop))
+    .filter(
+      ([prop, val]) =>
+        val && val !== 'none' && val !== 'normal' && val !== '0px' && !skip.includes(prop)
+    )
     .slice(0, 8)
     .map(([prop, value]) => ({ prop, value }));
 }

@@ -2,12 +2,37 @@ import { z } from 'zod';
 import type { ScreenshotResult } from '../acquire/screenshots.js';
 import type { LayoutSpec } from './layout.spec.js';
 
+/** Loose shape of a section before schema validation/fixing */
+interface RawSection {
+  position?: {
+    vertical?: string;
+    horizontal?: string;
+    order?: number;
+  };
+  layout?: {
+    pattern?: string;
+    alignment?: string;
+    columns?: number;
+    gap?: string;
+  };
+  type?: string;
+  [key: string]: unknown;
+}
+
+/** Loose shape of the parsed layout before schema validation/fixing */
+interface RawLayoutSpec {
+  viewport?: { width: number; height: number };
+  container?: Record<string, unknown>;
+  sections?: RawSection[];
+  [key: string]: unknown;
+}
+
 export function fixLayoutSpec(
-  parsed: any,
+  parsed: unknown,
   screenshot: ScreenshotResult,
   schema: z.ZodSchema<LayoutSpec>
 ): LayoutSpec {
-  const fixed: any = parsed;
+  const fixed = parsed as RawLayoutSpec;
 
   if (!fixed.viewport && screenshot) {
     fixed.viewport = { width: screenshot.width, height: screenshot.height };
@@ -18,7 +43,7 @@ export function fixLayoutSpec(
   }
 
   if (fixed.sections && Array.isArray(fixed.sections)) {
-    fixed.sections = fixed.sections.map((s: any, index: number) => {
+    fixed.sections = fixed.sections.map((s: RawSection, index: number) => {
       if (!s.position) {
         s.position = { vertical: 'middle', horizontal: 'full-width', order: index };
       }
@@ -26,7 +51,16 @@ export function fixLayoutSpec(
         s.layout = { pattern: 'single' };
       }
       if (s.layout && s.layout.alignment) {
-        const validAlignments = ['start', 'center', 'end', 'stretch', 'space-between', 'left', 'right', 'justify'];
+        const validAlignments = [
+          'start',
+          'center',
+          'end',
+          'stretch',
+          'space-between',
+          'left',
+          'right',
+          'justify',
+        ];
         if (!validAlignments.includes(s.layout.alignment)) {
           s.layout.alignment = 'center';
         }
@@ -50,7 +84,18 @@ export function fixLayoutSpec(
         }
       }
       if (s.type) {
-        const validTypes = ['header', 'navigation', 'hero', 'section', 'sidebar', 'footer', 'card', 'button', 'text', 'image'];
+        const validTypes = [
+          'header',
+          'navigation',
+          'hero',
+          'section',
+          'sidebar',
+          'footer',
+          'card',
+          'button',
+          'text',
+          'image',
+        ];
         if (!validTypes.includes(s.type)) {
           s.type = 'section';
         }

@@ -1,7 +1,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
 
-export async function runMixCommand(): Promise<void> {
+export function runMixCommand(): void {
   const spinner = ora('Mixing design memories...').start();
 
   try {

@@ -13,10 +13,7 @@ export interface PipelineConfig {
 
 import { analyzeLayoutSpec } from '../analyze/layout.spec.js';
 
-export async function runPipeline(
-  config: PipelineConfig,
-  logger?: Logger
-): Promise<void> {
+export async function runPipeline(config: PipelineConfig, logger?: Logger): Promise<void> {
   const bundle = await runAcquireStage(config.url, logger);
   const partialIR = runAnalyzeStage(bundle, logger);
   const ir = await runInterpretStage(partialIR, config.llm, logger);

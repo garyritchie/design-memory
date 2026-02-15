@@ -7,16 +7,13 @@ export function renderStyle(ir: DesignIR): string {
 
   const typography = ir.typography
     .map(
-      (t) =>
-        `- **${t.family}** ${t.size}px/${t.weight} (${t.role}): Line height ${t.lineHeight}`
+      (t) => `- **${t.family}** ${t.size}px/${t.weight} (${t.role}): Line height ${t.lineHeight}`
     )
     .join('\n');
 
   const spacing = ir.spacing.map((s) => `- ${s.value}${s.unit}`).join('\n');
   const radius = ir.radius.map((r) => `- ${r.value}${r.unit}`).join('\n');
-  const elevation = ir.elevation
-    .map((e) => `- Level ${e.level}: \`${e.shadow}\``)
-    .join('\n');
+  const elevation = ir.elevation.map((e) => `- Level ${e.level}: \`${e.shadow}\``).join('\n');
 
   const sections: string[] = [
     `# Style Guide`,

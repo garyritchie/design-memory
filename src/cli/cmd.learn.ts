@@ -65,11 +65,15 @@ export async function runLearnCommand(
     const partialIR = runAnalyzeStage(bundle, logger);
 
     progress.step('Interpreting design signals with AI');
-    const ir = await runInterpretStage(partialIR, {
-      apiKey,
-      model: options.model,
-      temperature: 0.2,
-    }, logger);
+    const ir = await runInterpretStage(
+      partialIR,
+      {
+        apiKey,
+        model: options.model,
+        temperature: 0.2,
+      },
+      logger
+    );
 
     progress.step('Analyzing layout with vision AI');
     const layoutSpec = await analyzeLayoutSpec(
@@ -83,9 +87,17 @@ export async function runLearnCommand(
 
     progress.succeed(`Design memory created in ${chalk.bold('.design-memory/')}`);
 
-    const source = options.fromImage ? 'image' : options.pages ? `${1 + options.pages.length} pages` : 'URL';
+    const source = options.fromImage
+      ? 'image'
+      : options.pages
+        ? `${1 + options.pages.length} pages`
+        : 'URL';
     console.log(chalk.dim(`\n   Source: ${source} — ${urlOrPath}`));
-    console.log(chalk.dim(`   Found ${chalk.yellow(String(ir.colors.length))} colors, ${chalk.yellow(String(ir.typography.length))} typography tokens, ${chalk.yellow(String(ir.components.length))} components`));
+    console.log(
+      chalk.dim(
+        `   Found ${chalk.yellow(String(ir.colors.length))} colors, ${chalk.yellow(String(ir.typography.length))} typography tokens, ${chalk.yellow(String(ir.components.length))} components`
+      )
+    );
   } catch (error) {
     progress.fail(`Failed: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);

@@ -3,8 +3,7 @@ import type { DesignIR } from '../ir/types.js';
 export function renderQA(ir: DesignIR): string {
   const items = ir.qa.items
     .map(
-      (item) =>
-        `## ${item.category}\n\n${item.checks.map((check) => `- [ ] ${check}`).join('\n')}`
+      (item) => `## ${item.category}\n\n${item.checks.map((check) => `- [ ] ${check}`).join('\n')}`
     )
     .join('\n\n');
 

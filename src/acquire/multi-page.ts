@@ -12,7 +12,7 @@ import type { Logger } from 'loglevel';
  */
 export async function captureMultiplePages(
   urls: string[],
-  logger?: Logger,
+  logger?: Logger
 ): Promise<CaptureBundle[]> {
   if (urls.length === 0) return [];
   if (urls.length === 1) {

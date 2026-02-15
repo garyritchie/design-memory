@@ -35,9 +35,12 @@ export function renderLayoutSpec(spec: LayoutSpec): string {
       sections.push(`\n**Content:**`);
       if (section.content.title) sections.push(`- Title: "${section.content.title}"`);
       if (section.content.subtitle) sections.push(`- Subtitle: "${section.content.subtitle}"`);
-      if (section.content.text) sections.push(`- Text: "${section.content.text.slice(0, 100)}${section.content.text.length > 100 ? '...' : ''}"`);
+      if (section.content.text)
+        sections.push(
+          `- Text: "${section.content.text.slice(0, 100)}${section.content.text.length > 100 ? '...' : ''}"`
+        );
       if (section.content.items && section.content.items.length > 0) {
-        sections.push(`- Items: ${section.content.items.map(i => `"${i}"`).join(', ')}`);
+        sections.push(`- Items: ${section.content.items.map((i) => `"${i}"`).join(', ')}`);
       }
     }
 
@@ -47,9 +50,11 @@ export function renderLayoutSpec(spec: LayoutSpec): string {
       if (section.styling.maxWidth) styleInfo.push(`max-width: ${section.styling.maxWidth}`);
       if (section.styling.padding) styleInfo.push(`padding: ${section.styling.padding}`);
       if (section.styling.margin) styleInfo.push(`margin: ${section.styling.margin}`);
-      if (section.styling.backgroundColor) styleInfo.push(`background: ${section.styling.backgroundColor}`);
+      if (section.styling.backgroundColor)
+        styleInfo.push(`background: ${section.styling.backgroundColor}`);
       if (section.styling.color) styleInfo.push(`color: ${section.styling.color}`);
-      if (section.styling.borderRadius) styleInfo.push(`border-radius: ${section.styling.borderRadius}`);
+      if (section.styling.borderRadius)
+        styleInfo.push(`border-radius: ${section.styling.borderRadius}`);
       if (section.styling.border) styleInfo.push(`border: ${section.styling.border}`);
       if (styleInfo.length > 0) {
         sections.push(`\n**Styling:** ${styleInfo.join(', ')}`);
@@ -110,11 +115,15 @@ export function renderLayoutSpec(spec: LayoutSpec): string {
   sections.push('- Maintain the content hierarchy and relationships');
   sections.push('\n### Visual Styling:');
   sections.push('- Use EXACT colors specified (hex codes) - do not guess or use defaults');
-  sections.push('- Apply button styles exactly as specified (background, text color, border, radius)');
+  sections.push(
+    '- Apply button styles exactly as specified (background, text color, border, radius)'
+  );
   sections.push('- Use typography values (font size, weight, line height) as specified');
   sections.push('- Match background colors and text colors precisely');
   sections.push('\n### Important:');
-  sections.push('- If a button is specified as white background (#ffffff), use white - NOT blue or any other color');
+  sections.push(
+    '- If a button is specified as white background (#ffffff), use white - NOT blue or any other color'
+  );
   sections.push('- If text is specified as a color, use that exact color');
   sections.push('- Follow all visual details to achieve pixel-perfect accuracy');
   sections.push('- Implement responsive behavior at specified breakpoints');

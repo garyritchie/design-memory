@@ -19,7 +19,9 @@ export function runAnalyzeStage(bundle: CaptureBundle, logger?: Logger): Partial
   const breakpointAnalysis = analyzeBreakpoints(bundle.crawl.html);
   const motion = extractMotion(bundle.styles);
 
-  logger?.info(`Found ${bundle.variables.length} CSS variables, ${classAnalysis.tailwindPatterns.length} Tailwind classes, ${breakpointAnalysis.breakpoints.length} breakpoints, ${motion.length} motion tokens`);
+  logger?.info(
+    `Found ${bundle.variables.length} CSS variables, ${classAnalysis.tailwindPatterns.length} Tailwind classes, ${breakpointAnalysis.breakpoints.length} breakpoints, ${motion.length} motion tokens`
+  );
 
   return {
     colors: extractColors(bundle.styles),

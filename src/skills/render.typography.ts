@@ -9,9 +9,7 @@ export function renderTypographySkill(ir: DesignIR): string {
   const body = ir.typography.filter((t) => t.role === 'body');
   const caption = ir.typography.filter((t) => t.role === 'caption');
 
-  const fontVars = ir.variables?.filter((v) =>
-    /font|type|heading|body|family/i.test(v.name)
-  ) ?? [];
+  const fontVars = ir.variables?.filter((v) => /font|type|heading|body|family/i.test(v.name)) ?? [];
 
   return `---
 name: typography

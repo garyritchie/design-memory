@@ -16,8 +16,8 @@
     "test:integration": "RUN_INTEGRATION=1 vitest run src/acquire/capture.integration.test.ts",
     "test:accuracy": "RUN_ACCURACY=1 vitest run src/tests/accuracy.test.ts",
     "test:watch": "vitest --watch",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "check-loc": "node scripts/check-loc.js",
     "postinstall": "playwright install chromium",
@@ -54,6 +54,7 @@
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^25.2.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
@@ -63,6 +64,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0",
     "vitest": "^4.0.18"
   },
   "engines": {

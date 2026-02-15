@@ -8,10 +8,7 @@ export async function ensureDir(path: string): Promise<void> {
   }
 }
 
-export async function writeTextFile(
-  path: string,
-  content: string
-): Promise<void> {
+export async function writeTextFile(path: string, content: string): Promise<void> {
   await ensureDir(dirname(path));
   await writeFile(path, content, 'utf-8');
 }

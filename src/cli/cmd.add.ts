@@ -1,7 +1,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
 
-export async function runAddCommand(packageName: string): Promise<void> {
+export function runAddCommand(packageName: string): void {
   const spinner = ora(`Adding ${packageName}...`).start();
 
   try {

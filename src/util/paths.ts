@@ -6,9 +6,6 @@ export function getDesignMemoryPath(projectRoot?: string): string {
   return join(root, '.design-memory');
 }
 
-export function getDesignMemoryFile(
-  filename: string,
-  projectRoot?: string
-): string {
+export function getDesignMemoryFile(filename: string, projectRoot?: string): string {
   return join(getDesignMemoryPath(projectRoot), filename);
 }

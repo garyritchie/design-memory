@@ -1,4 +1,4 @@
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 export interface ProjectContext {
@@ -57,8 +57,7 @@ function readPkg(root: string): Record<string, Record<string, string>> | null {
   try {
     const pkgPath = join(root, 'package.json');
     if (!existsSync(pkgPath)) return null;
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return JSON.parse(require('fs').readFileSync(pkgPath, 'utf-8'));
+    return JSON.parse(readFileSync(pkgPath, 'utf-8')) as Record<string, Record<string, string>>;
   } catch {
     return null;
   }

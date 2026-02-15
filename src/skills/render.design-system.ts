@@ -36,7 +36,16 @@ ${ir.variables && ir.variables.length > 0 ? '```css\n:root {\n' + ir.variables.m
 
 ## Framework
 
-${isTailwind ? `**Tailwind CSS** detected. Use Tailwind utility classes. Top patterns:\n${(ir.classAnalysis?.tailwindPatterns ?? []).slice(0, 20).map((c) => `\`${c}\``).join(', ')}` : 'No Tailwind detected. Use plain CSS or CSS-in-JS with the tokens above.'}
+${
+  isTailwind
+    ? `**Tailwind CSS** detected. Use Tailwind utility classes. Top patterns:\n${(
+        ir.classAnalysis?.tailwindPatterns ?? []
+      )
+        .slice(0, 20)
+        .map((c) => `\`${c}\``)
+        .join(', ')}`
+    : 'No Tailwind detected. Use plain CSS or CSS-in-JS with the tokens above.'
+}
 
 ## Breakpoints
 

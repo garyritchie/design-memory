@@ -24,13 +24,16 @@ export function renderASCIILayout(structure: LayoutElement[]): string {
   const viewportHeight = Math.max(maxY - minY, 100);
 
   const canvasWidth = 78;
-  const canvasHeight = Math.min(30, Math.max(10, Math.floor((viewportHeight / viewportWidth) * canvasWidth)));
+  const canvasHeight = Math.min(
+    30,
+    Math.max(10, Math.floor((viewportHeight / viewportWidth) * canvasWidth))
+  );
   const scaleX = canvasWidth / viewportWidth;
   const scaleY = canvasHeight / viewportHeight;
 
-  const grid: string[][] = Array(canvasHeight)
-    .fill(null)
-    .map(() => Array(canvasWidth).fill(' '));
+  const grid: string[][] = Array.from({ length: canvasHeight }, () =>
+    Array.from({ length: canvasWidth }, () => ' ')
+  );
 
   const topElements = filterAndSortElements(filtered);
 
@@ -52,17 +55,20 @@ export function renderASCIILayout(structure: LayoutElement[]): string {
     const trimmed = line.trim();
     return trimmed.length > 0 && trimmed.match(/[┌┐└┘│─]/);
   });
-  
+
   if (!hasContent && topElements.length > 0) {
-    const debug = topElements.slice(0, 3).map(e => {
-      const relX = e.bounds.x - minX;
-      const relY = e.bounds.y - minY;
-      const x1 = Math.max(0, Math.floor(relX * scaleX));
-      const y1 = Math.max(0, Math.floor(relY * scaleY));
-      const x2 = Math.min(canvasWidth - 1, Math.floor((relX + e.bounds.width) * scaleX));
-      const y2 = Math.min(canvasHeight - 1, Math.floor((relY + e.bounds.height) * scaleY));
-      return `${e.selector}: ${e.bounds.x},${e.bounds.y} ${e.bounds.width}×${e.bounds.height} -> [${x1},${y1}]-[${x2},${y2}]`;
-    }).join('\n');
+    const debug = topElements
+      .slice(0, 3)
+      .map((e) => {
+        const relX = e.bounds.x - minX;
+        const relY = e.bounds.y - minY;
+        const x1 = Math.max(0, Math.floor(relX * scaleX));
+        const y1 = Math.max(0, Math.floor(relY * scaleY));
+        const x2 = Math.min(canvasWidth - 1, Math.floor((relX + e.bounds.width) * scaleX));
+        const y2 = Math.min(canvasHeight - 1, Math.floor((relY + e.bounds.height) * scaleY));
+        return `${e.selector}: ${e.bounds.x},${e.bounds.y} ${e.bounds.width}×${e.bounds.height} -> [${x1},${y1}]-[${x2},${y2}]`;
+      })
+      .join('\n');
     return `Page Layout (top-down view):\n\nFound ${filtered.length} elements but visualization failed.\nDebug:\n${debug}\nScale: ${scaleX.toFixed(4)}×${scaleY.toFixed(4)}\nCanvas: ${canvasWidth}×${canvasHeight}`;
   }
 

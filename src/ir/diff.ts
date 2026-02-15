@@ -33,12 +33,24 @@ export interface DiffSummary {
  */
 export function diffDesignIRs(a: DesignIR, b: DesignIR): DesignDiff {
   const colors = diffByKey(a.colors, b.colors, (c) => c.hex);
-  const typography = diffByKey(a.typography, b.typography, (t) => `${t.family}:${t.size}:${t.weight}`);
+  const typography = diffByKey(
+    a.typography,
+    b.typography,
+    (t) => `${t.family}:${t.size}:${t.weight}`
+  );
   const components = diffByKey(a.components, b.components, (c) => c.name);
   const variables = diffVariables(a.variables ?? [], b.variables ?? []);
 
-  const addedCount = colors.added.length + typography.added.length + components.added.length + variables.added.length;
-  const removedCount = colors.removed.length + typography.removed.length + components.removed.length + variables.removed.length;
+  const addedCount =
+    colors.added.length +
+    typography.added.length +
+    components.added.length +
+    variables.added.length;
+  const removedCount =
+    colors.removed.length +
+    typography.removed.length +
+    components.removed.length +
+    variables.removed.length;
   const changedCount = variables.changed.length;
   const totalChanges = addedCount + removedCount + changedCount;
 
@@ -69,7 +81,7 @@ function diffByKey<T>(aList: T[], bList: T[], keyFn: (item: T) => string): Token
 
 function diffVariables(
   aVars: Array<{ name: string; value: string }>,
-  bVars: Array<{ name: string; value: string }>,
+  bVars: Array<{ name: string; value: string }>
 ): DesignDiff['variables'] {
   const aMap = new Map(aVars.map((v) => [v.name, v.value]));
   const bMap = new Map(bVars.map((v) => [v.name, v.value]));

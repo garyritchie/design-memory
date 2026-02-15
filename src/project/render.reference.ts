@@ -124,7 +124,9 @@ export function renderReference(ir: DesignIR, url: string, layoutSpec?: LayoutSp
   s.push(`## Layout\n`);
   if (layoutSpec?.sections) {
     for (const section of layoutSpec.sections) {
-      s.push(`- **${section.name}** (${section.type}): ${section.layout.pattern}${section.layout.columns ? `, ${section.layout.columns} columns` : ''}`);
+      s.push(
+        `- **${section.name}** (${section.type}): ${section.layout.pattern}${section.layout.columns ? `, ${section.layout.columns} columns` : ''}`
+      );
     }
   } else if (ir.layout.length > 0) {
     for (const l of ir.layout) {

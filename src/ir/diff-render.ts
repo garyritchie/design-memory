@@ -20,15 +20,39 @@ export function renderDiffMarkdown(diff: DesignDiff, urlA: string, urlB: string)
   s.push(`- **${diff.summary.totalChanges}** total`);
   s.push('');
 
-  renderTokenSection(s, 'Colors', diff.colors.added, diff.colors.removed, (c) => `\`${c.hex}\` (${c.role})`);
-  renderTokenSection(s, 'Typography', diff.typography.added, diff.typography.removed, (t) => `${t.family} ${t.size}px/${t.weight} (${t.role})`);
-  renderTokenSection(s, 'Components', diff.components.added, diff.components.removed, (c) => `${c.name} (${c.type})`);
+  renderTokenSection(
+    s,
+    'Colors',
+    diff.colors.added,
+    diff.colors.removed,
+    (c) => `\`${c.hex}\` (${c.role})`
+  );
+  renderTokenSection(
+    s,
+    'Typography',
+    diff.typography.added,
+    diff.typography.removed,
+    (t) => `${t.family} ${t.size}px/${t.weight} (${t.role})`
+  );
+  renderTokenSection(
+    s,
+    'Components',
+    diff.components.added,
+    diff.components.removed,
+    (c) => `${c.name} (${c.type})`
+  );
   renderVariablesSection(s, diff.variables);
 
   return s.join('\n');
 }
 
-function renderTokenSection<T>(s: string[], title: string, added: T[], removed: T[], fmt: (item: T) => string): void {
+function renderTokenSection<T>(
+  s: string[],
+  title: string,
+  added: T[],
+  removed: T[],
+  fmt: (item: T) => string
+): void {
   if (!added.length && !removed.length) return;
   s.push(`## ${title}`);
   s.push('');

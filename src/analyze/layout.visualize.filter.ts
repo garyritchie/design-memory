@@ -2,12 +2,13 @@ import type { LayoutElement } from './layout.visualize.extract.js';
 
 export function filterAndSortElements(elements: LayoutElement[]): LayoutElement[] {
   const semanticTags = ['header', 'nav', 'main', 'aside', 'section', 'footer'];
-  
+
   return elements
     .filter((s, i, arr) => {
       return !arr.some((other, j) => {
         if (i === j) return false;
-        const contains = other.bounds.x <= s.bounds.x &&
+        const contains =
+          other.bounds.x <= s.bounds.x &&
           other.bounds.y <= s.bounds.y &&
           other.bounds.x + other.bounds.width >= s.bounds.x + s.bounds.width &&
           other.bounds.y + other.bounds.height >= s.bounds.y + s.bounds.height;

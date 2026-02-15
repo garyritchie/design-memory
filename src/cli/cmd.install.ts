@@ -14,9 +14,7 @@ export async function runInstallCommand(): Promise<void> {
     // Check .design-memory exists
     const dmPath = join(root, '.design-memory');
     if (!existsSync(dmPath)) {
-      spinner.fail(
-        chalk.red('No .design-memory/ found. Run `design-memory learn <url>` first.')
-      );
+      spinner.fail(chalk.red('No .design-memory/ found. Run `design-memory learn <url>` first.'));
       process.exit(1);
     }
 
@@ -24,7 +22,9 @@ export async function runInstallCommand(): Promise<void> {
     spinner.text = chalk.cyan('Detecting project framework...');
     const ctx = detectProject(root);
 
-    spinner.text = chalk.cyan(`Detected: ${chalk.yellow(ctx.framework)}${ctx.hasTailwind ? ' + Tailwind' : ''}`);
+    spinner.text = chalk.cyan(
+      `Detected: ${chalk.yellow(ctx.framework)}${ctx.hasTailwind ? ' + Tailwind' : ''}`
+    );
 
     // Extract tokens
     spinner.text = chalk.cyan('Reading design tokens...');
@@ -32,7 +32,9 @@ export async function runInstallCommand(): Promise<void> {
 
     if (!tokens.cssVariablesBlock) {
       spinner.fail(
-        chalk.red('No CSS tokens found in .design-memory/. Try running `design-memory learn <url>` again.')
+        chalk.red(
+          'No CSS tokens found in .design-memory/. Try running `design-memory learn <url>` again.'
+        )
       );
       process.exit(1);
     }
@@ -52,7 +54,9 @@ export async function runInstallCommand(): Promise<void> {
       console.log(chalk.dim(`   → ${file}`));
     }
 
-    console.log(chalk.dim(`\n   Framework: ${ctx.framework}${ctx.hasTailwind ? ' + Tailwind' : ''}`));
+    console.log(
+      chalk.dim(`\n   Framework: ${ctx.framework}${ctx.hasTailwind ? ' + Tailwind' : ''}`)
+    );
   } catch (error) {
     spinner.fail(chalk.red(`Failed: ${error instanceof Error ? error.message : String(error)}`));
     process.exit(1);

@@ -23,7 +23,7 @@ export async function withRetry<T>(
   fn: () => Promise<T>,
   label: string,
   logger?: Logger,
-  opts?: RetryOptions,
+  opts?: RetryOptions
 ): Promise<T> {
   const { retries, baseDelay, backoffFactor } = { ...DEFAULTS, ...opts };
 
@@ -38,7 +38,9 @@ export async function withRetry<T>(
       if (attempt < retries) {
         const delay = baseDelay * Math.pow(backoffFactor, attempt);
         const msg = error instanceof Error ? error.message : String(error);
-        logger?.warn(`[retry] ${label} attempt ${attempt + 1} failed: ${msg} — retrying in ${delay}ms`);
+        logger?.warn(
+          `[retry] ${label} attempt ${attempt + 1} failed: ${msg} — retrying in ${delay}ms`
+        );
         await sleep(delay);
       }
     }

@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { callLLMWithRepair } from './llm.repair.js';
-import { buildColorClassificationPrompt, buildTypographyClassificationPrompt } from './llm.prompts.js';
+import {
+  buildColorClassificationPrompt,
+  buildTypographyClassificationPrompt,
+} from './llm.prompts.js';
 import { colorTokenSchema, typographyTokenSchema } from '../ir/schema.js';
 import type { ColorToken, TypographyToken } from '../ir/types.js';
 import type { LLMConfig } from './llm.client.js';

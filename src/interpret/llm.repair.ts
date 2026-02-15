@@ -19,7 +19,7 @@ export async function callLLMWithRepair<T>(
 
       try {
         return await callLLM(repairPrompt, schema, config, logger);
-      } catch (repairError) {
+      } catch {
         logger?.debug('Repair attempt failed, using fallback');
         return null;
       }

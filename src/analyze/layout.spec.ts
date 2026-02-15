@@ -5,82 +5,16 @@ import type { Logger } from 'loglevel';
 import { z } from 'zod';
 import { buildLayoutSpecPrompt } from './layout.spec.prompt.js';
 import { fixLayoutSpec } from './layout.spec.fix.js';
+import { layoutSpecSchema } from './layout.spec.schema.js';
 
-const layoutSectionSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  type: z.string(),
-  position: z.object({
-    vertical: z.enum(['top', 'middle', 'bottom']),
-    horizontal: z.enum(['left', 'center', 'right', 'full-width']),
-    order: z.number(),
-  }),
-  layout: z.object({
-    pattern: z.enum(['single', 'row', 'column', 'grid', 'flex', 'centered']),
-    columns: z.number().optional(),
-    gap: z.string().optional(),
-    alignment: z.string().optional(),
-  }),
-  content: z.object({
-    title: z.string().optional(),
-    subtitle: z.string().optional(),
-    text: z.string().optional(),
-    items: z.array(z.string()).optional(),
-  }),
-  styling: z.object({
-    width: z.string().optional(),
-    maxWidth: z.string().optional(),
-    padding: z.string().optional(),
-    margin: z.string().optional(),
-    backgroundColor: z.string().optional(),
-    color: z.string().optional(),
-    borderRadius: z.string().optional(),
-    border: z.string().optional(),
-  }),
-  visual: z.object({
-    background: z.string().optional(),
-    textColor: z.string().optional(),
-    buttonStyle: z.object({
-      backgroundColor: z.string().optional(),
-      color: z.string().optional(),
-      border: z.string().optional(),
-      borderRadius: z.string().optional(),
-    }).optional(),
-    typography: z.object({
-      fontSize: z.string().optional(),
-      fontWeight: z.string().optional(),
-      lineHeight: z.string().optional(),
-      fontFamily: z.string().optional(),
-    }).optional(),
-  }).optional(),
-  children: z.array(z.any()).optional(),
-});
-
-const layoutSpecSchema = z.object({
-  viewport: z.object({
-    width: z.number(),
-    height: z.number(),
-  }).optional(),
-  container: z.object({
-    maxWidth: z.string().optional(),
-    padding: z.string().optional(),
-    alignment: z.enum(['left', 'center', 'right']).optional(),
-  }).optional(),
-  sections: z.array(layoutSectionSchema),
-  responsive: z.object({
-    breakpoints: z.array(z.number()).optional(),
-    behavior: z.string().optional(),
-  }).optional(),
-});
-
-export type LayoutSpec = z.infer<typeof layoutSpecSchema>;
-export type LayoutSection = z.infer<typeof layoutSectionSchema>;
+export type { LayoutSpec, LayoutSection } from './layout.spec.schema.js';
+export { layoutSpecSchema } from './layout.spec.schema.js';
 
 export async function analyzeLayoutSpec(
   screenshot: ScreenshotResult,
   config: LLMConfig,
   logger?: Logger
-): Promise<LayoutSpec> {
+): Promise<z.infer<typeof layoutSpecSchema>> {
   const client = new OpenAI({ apiKey: config.apiKey });
 
   logger?.debug('Analyzing layout specification with vision model...');
@@ -137,12 +71,12 @@ This specification will be used by LLMs to generate code that recreates the exac
     throw new Error('Invalid JSON response from vision model');
   }
 
-  let spec: LayoutSpec;
+  let spec: z.infer<typeof layoutSpecSchema>;
   try {
     spec = layoutSpecSchema.parse(parsed);
   } catch (error) {
     logger?.warn('Schema validation failed, attempting to fix...', error);
-    
+
     if (error instanceof z.ZodError) {
       try {
         spec = fixLayoutSpec(parsed, screenshot, layoutSpecSchema);

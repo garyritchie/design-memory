@@ -54,7 +54,9 @@ export function detectComponents(styles: ComputedStyle[]): ComponentRecipe[] {
   const h1 = styleMap.get('h1');
   const main = styleMap.get('main') ?? styleMap.get('section');
   if (h1 && isLargeText(h1.properties) && main) {
-    components.push(recipe('unknown', 'hero-section', main.properties, 'Hero section with large heading and CTA'));
+    components.push(
+      recipe('unknown', 'hero-section', main.properties, 'Hero section with large heading and CTA')
+    );
   }
 
   // Footer
@@ -73,7 +75,14 @@ export function detectComponents(styles: ComputedStyle[]): ComponentRecipe[] {
   const label = styleMap.get('label');
   const input = styleMap.get('input');
   if (label && input) {
-    components.push(recipe('form', 'form-group', { ...label.properties, ...input.properties }, 'Label + input form group'));
+    components.push(
+      recipe(
+        'form',
+        'form-group',
+        { ...label.properties, ...input.properties },
+        'Label + input form group'
+      )
+    );
   }
 
   return components;
@@ -85,7 +94,7 @@ function recipe(
   type: ComponentRecipe['type'],
   name: string,
   styles: Record<string, string>,
-  usage: string,
+  usage: string
 ): ComponentRecipe {
   return { type, name, styles, usage, constraints: [], do: [], dont: [] };
 }

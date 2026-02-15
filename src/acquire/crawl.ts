@@ -13,7 +13,7 @@ export interface CrawlResult {
 export async function crawlUrl(
   url: string,
   logger?: Logger,
-  browser?: Browser,
+  browser?: Browser
 ): Promise<CrawlResult> {
   const ownBrowser = !browser;
   if (!browser) {
@@ -50,6 +50,6 @@ export async function crawlUrl(
       }
     },
     `crawl(${url})`,
-    logger,
+    logger
   );
 }

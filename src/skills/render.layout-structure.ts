@@ -19,7 +19,9 @@ description: Page layout structure, section order, and responsive breakpoints.
   if (layoutSpec?.sections) {
     for (const section of layoutSpec.sections) {
       sections.push(`### ${section.name} (\`${section.type}\`)\n`);
-      sections.push(`- **Position:** vertical=${section.position.vertical}, horizontal=${section.position.horizontal}, order=${section.position.order}`);
+      sections.push(
+        `- **Position:** vertical=${section.position.vertical}, horizontal=${section.position.horizontal}, order=${section.position.order}`
+      );
       sections.push(`- **Layout pattern:** ${section.layout.pattern}`);
       if (section.layout.columns) sections.push(`  - Columns: ${section.layout.columns}`);
       if (section.layout.gap) sections.push(`  - Gap: ${section.layout.gap}`);
@@ -27,7 +29,8 @@ description: Page layout structure, section order, and responsive breakpoints.
 
       if (section.content) {
         if (section.content.title) sections.push(`- **Title:** "${section.content.title}"`);
-        if (section.content.subtitle) sections.push(`- **Subtitle:** "${section.content.subtitle}"`);
+        if (section.content.subtitle)
+          sections.push(`- **Subtitle:** "${section.content.subtitle}"`);
       }
 
       if (section.styling) {
@@ -50,7 +53,9 @@ description: Page layout structure, section order, and responsive breakpoints.
         sections.push(`- ${parts.join(', ')} (${l.evidence.join(', ')})`);
       }
     } else {
-      sections.push('No layout primitives detected. Use the design tokens and component patterns to infer layout.');
+      sections.push(
+        'No layout primitives detected. Use the design tokens and component patterns to infer layout.'
+      );
     }
     sections.push('');
   }

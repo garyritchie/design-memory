@@ -48,9 +48,6 @@ program
   .option('--output <path>', 'Output path for the diff report', 'design-diff.md')
   .action(runDiffCommand);
 
-program
-  .command('mix')
-  .description('Mix design memories (stub)')
-  .action(runMixCommand);
+program.command('mix').description('Mix design memories (stub)').action(runMixCommand);
 
 program.parse();

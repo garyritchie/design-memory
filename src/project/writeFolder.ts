@@ -39,13 +39,19 @@ export async function writeDesignMemoryFolder(
     writeTextFile(getDesignMemoryFile('motion.md', projectRoot), renderMotion(ir)),
     writeTextFile(getDesignMemoryFile('qa.md', projectRoot), renderQA(ir)),
     // Phase 3: consolidated reference
-    writeTextFile(getDesignMemoryFile('reference.md', projectRoot), renderReference(ir, url, layoutSpec)),
+    writeTextFile(
+      getDesignMemoryFile('reference.md', projectRoot),
+      renderReference(ir, url, layoutSpec)
+    ),
     // Phase 3: skills
     writeTextFile(join(skillsPath, 'design-system.md'), renderDesignSystemSkill(ir, url)),
     writeTextFile(join(skillsPath, 'color-palette.md'), renderColorPaletteSkill(ir)),
     writeTextFile(join(skillsPath, 'typography.md'), renderTypographySkill(ir)),
     writeTextFile(join(skillsPath, 'component-patterns.md'), renderComponentPatternsSkill(ir)),
-    writeTextFile(join(skillsPath, 'layout-structure.md'), renderLayoutStructureSkill(ir, layoutSpec)),
+    writeTextFile(
+      join(skillsPath, 'layout-structure.md'),
+      renderLayoutStructureSkill(ir, layoutSpec)
+    ),
     writeTextFile(join(skillsPath, 'motion-guidelines.md'), renderMotionGuidelinesSkill(ir)),
   ]);
 }

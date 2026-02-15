@@ -52,9 +52,17 @@ export async function runDiffCommand(
     const outputPath = options?.output ?? join(process.cwd(), 'design-diff.md');
     await writeTextFile(outputPath, report);
 
-    spinner.succeed(chalk.green(`Diff complete: ${chalk.bold(diff.summary.verdict)} (${diff.summary.totalChanges} changes)`));
+    spinner.succeed(
+      chalk.green(
+        `Diff complete: ${chalk.bold(diff.summary.verdict)} (${diff.summary.totalChanges} changes)`
+      )
+    );
 
-    console.log(chalk.dim(`\n   ${chalk.green(`+${diff.summary.addedCount}`)} added, ${chalk.red(`-${diff.summary.removedCount}`)} removed, ${chalk.yellow(`~${diff.summary.changedCount}`)} changed`));
+    console.log(
+      chalk.dim(
+        `\n   ${chalk.green(`+${diff.summary.addedCount}`)} added, ${chalk.red(`-${diff.summary.removedCount}`)} removed, ${chalk.yellow(`~${diff.summary.changedCount}`)} changed`
+      )
+    );
     console.log(chalk.dim(`   Report written to ${outputPath}`));
   } catch (error) {
     spinner.fail(chalk.red(`Failed: ${error instanceof Error ? error.message : String(error)}`));
@@ -65,7 +73,7 @@ export async function runDiffCommand(
 async function learnSingle(
   url: string,
   config: LLMConfig,
-  logger: typeof defaultLogger,
+  logger: typeof defaultLogger
 ): Promise<DesignIR> {
   const bundle = await runAcquireStage(url, logger);
   const partialIR = runAnalyzeStage(bundle, logger);

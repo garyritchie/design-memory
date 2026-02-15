@@ -128,10 +128,7 @@ Return a single JSON object:
 
 export function buildComponentRecipePrompt(components: ComponentRecipe[]): string {
   const list = components
-    .map(
-      (c) =>
-        `- ${c.type} "${c.name}": ${JSON.stringify(c.styles).slice(0, 200)}`
-    )
+    .map((c) => `- ${c.type} "${c.name}": ${JSON.stringify(c.styles).slice(0, 200)}`)
     .join('\n');
 
   return `You are a senior frontend engineer and design system specialist. Enrich these component recipes with practical usage guidelines.

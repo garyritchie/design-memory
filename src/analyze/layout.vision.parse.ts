@@ -1,6 +1,9 @@
 import type { Logger } from 'loglevel';
 
-export function parseVisionResponse(content: string, logger?: Logger): { ascii: string; description: string } {
+export function parseVisionResponse(
+  content: string,
+  logger?: Logger
+): { ascii: string; description: string } {
   let ascii = '';
   let description = '';
 
@@ -17,9 +20,15 @@ export function parseVisionResponse(content: string, logger?: Logger): { ascii: 
     }
   } else {
     const lines = content.split('\n');
-    const asciiStart = lines.findIndex((l) => 
-      l.includes('┌') || l.includes('│') || l.includes('─') || 
-      l.includes('├') || l.includes('┤') || l.includes('└') || l.includes('┘')
+    const asciiStart = lines.findIndex(
+      (l) =>
+        l.includes('┌') ||
+        l.includes('│') ||
+        l.includes('─') ||
+        l.includes('├') ||
+        l.includes('┤') ||
+        l.includes('└') ||
+        l.includes('┘')
     );
     if (asciiStart >= 0) {
       ascii = lines.slice(asciiStart).join('\n').trim();
@@ -33,11 +42,20 @@ export function parseVisionResponse(content: string, logger?: Logger): { ascii: 
   if (!ascii || ascii.length < 50) {
     logger?.warn('ASCII diagram seems too short, attempting to extract from full response');
     const allLines = content.split('\n');
-    const diagramLines = allLines.filter((l) => 
-      l.includes('┌') || l.includes('│') || l.includes('─') || 
-      l.includes('├') || l.includes('┤') || l.includes('└') || 
-      l.includes('┘') || l.includes('Header') || l.includes('Hero') ||
-      l.includes('Nav') || l.includes('Footer') || l.trim().length > 0
+    const diagramLines = allLines.filter(
+      (l) =>
+        l.includes('┌') ||
+        l.includes('│') ||
+        l.includes('─') ||
+        l.includes('├') ||
+        l.includes('┤') ||
+        l.includes('└') ||
+        l.includes('┘') ||
+        l.includes('Header') ||
+        l.includes('Hero') ||
+        l.includes('Nav') ||
+        l.includes('Footer') ||
+        l.trim().length > 0
     );
     if (diagramLines.length > 5) {
       ascii = diagramLines.join('\n');

@@ -16,7 +16,7 @@ export async function callLLM<T>(
   _logger?: Logger
 ): Promise<T> {
   const client = new OpenAI({ apiKey: config.apiKey });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
   const jsonSchema = zodToJsonSchema(schema as any, { name: 'Response' });
 
   const isArraySchema = schema instanceof z.ZodArray;
@@ -56,7 +56,10 @@ CRITICAL:
     throw new Error('Empty LLM response');
   }
 
-  const parsed = JSON.parse(content);
-  const data = isArraySchema && typeof parsed === 'object' && 'data' in parsed ? parsed.data : parsed;
+  const parsed: unknown = JSON.parse(content) as unknown;
+  const data =
+    isArraySchema && typeof parsed === 'object' && parsed !== null && 'data' in parsed
+      ? (parsed as Record<string, unknown>).data
+      : parsed;
   return schema.parse(data);
 }

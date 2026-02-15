@@ -38,14 +38,14 @@ function getCacheFile(url: string, projectRoot: string): string {
  */
 export async function loadCachedBundle(
   url: string,
-  projectRoot: string,
+  projectRoot: string
 ): Promise<CaptureBundle | null> {
   const file = getCacheFile(url, projectRoot);
   if (!existsSync(file)) return null;
 
   try {
     const raw = await readFile(file, 'utf-8');
-    const entry: CacheEntry = JSON.parse(raw);
+    const entry = JSON.parse(raw) as CacheEntry;
 
     // Check expiration
     if (Date.now() - entry.timestamp > MAX_AGE_MS) {
@@ -69,7 +69,7 @@ export async function loadCachedBundle(
 export async function saveBundleToCache(
   url: string,
   bundle: CaptureBundle,
-  projectRoot: string,
+  projectRoot: string
 ): Promise<void> {
   const cachePath = getCachePath(projectRoot);
   await ensureDir(cachePath);
