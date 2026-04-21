@@ -21,12 +21,19 @@ export async function analyzeLayoutSpec(
 
   const base64Image = screenshot.buffer.toString('base64');
 
+  // --- ADD THIS DELAY ---
+  console.log("⏳ Pausing for 15 seconds to allow Ollama to load the Vision model...");
+  await new Promise(resolve => setTimeout(resolve, 15000));
+  // ----------------------
+
   const response = await client.chat.completions.create({
     model: process.env.OPENAI_VISION_MODEL || (config.model?.includes('vision') ? config.model : 'gpt-4o'),
     messages: [
       {
         role: 'system',
         content: `You are a design system expert. Analyze the webpage screenshot and create a detailed layout specification in JSON format that any LLM can use to recreate this design.
+
+CRITICAL: Your output MUST be a valid JSON object with a single root key "sections" containing an array of layout sections. Example: {"sections": [...]}
 
 Your output must be valid JSON matching this schema. Be extremely precise about:
 - Section positions (top/middle/bottom, left/center/right/full-width)
@@ -53,7 +60,7 @@ This specification will be used by LLMs to generate code that recreates the exac
         ],
       },
     ],
-    response_format: { type: 'json_object' },
+    // response_format: { type: 'json_object' },
     max_tokens: 2500,
     temperature: 0.0,
   });
@@ -65,7 +72,29 @@ This specification will be used by LLMs to generate code that recreates the exac
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(content);
+    // 1. Try to find a Markdown JSON block first (using escaped backticks for safety)
+    const markdownMatch = content.match(/\`\`\`(?:json)?\s*([\s\S]*?)\s*\`\`\`/i);
+    
+    // 2. Local models might return a raw array [] or an object {}
+    const bracketMatch = content.match(/\{[\s\S]*\}/);
+    const arrayMatch = content.match(/\[[\s\S]*\]/);
+    
+    let cleanContent = content;
+    if (markdownMatch?.[1]) {
+      cleanContent = markdownMatch[1];
+    } else if (bracketMatch?.[0] || arrayMatch?.[0]) {
+      const bLen = bracketMatch?.[0]?.length || 0;
+      const aLen = arrayMatch?.[0]?.length || 0;
+      cleanContent = bLen > aLen ? bracketMatch![0] : arrayMatch![0];
+    }
+    
+    parsed = JSON.parse(cleanContent.trim());
+
+    // 3. Defensive wrapper: Many local models accidentally return just the array 
+    // instead of wrapping it in the required "sections" root object.
+    if (Array.isArray(parsed)) {
+      parsed = { sections: parsed };
+    }
   } catch (error) {
     logger?.error('Failed to parse JSON response', error);
     throw new Error('Invalid JSON response from vision model');

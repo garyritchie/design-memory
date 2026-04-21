@@ -21,8 +21,11 @@ export async function visualizeLayoutWithVision(
 
   const base64Image = screenshot.buffer.toString('base64');
 
+  console.log("⏳ Pausing for 15 seconds to allow Ollama to load the Vision model...");
+  await new Promise(resolve => setTimeout(resolve, 15000));
+
   const response = await client.chat.completions.create({
-    model: config.model?.includes('vision') ? config.model : 'gpt-4o',
+    model: process.env.OPENAI_VISION_MODEL || (config.model?.includes('vision') ? config.model : 'gpt-4o'),
     messages: [
       {
         role: 'system',

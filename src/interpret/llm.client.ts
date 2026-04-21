@@ -39,7 +39,7 @@ CRITICAL:
 - Arrays must be arrays, never null or undefined`;
 
   const response = await client.chat.completions.create({
-    model: config.model ?? 'gpt-4o-mini',
+    model: process.env.OPENAI_MODEL || config.model || 'gpt-4o-mini',
     temperature: config.temperature ?? 0.2,
     messages: [
       {
