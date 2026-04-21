@@ -22,7 +22,7 @@ export async function analyzeLayoutSpec(
   const base64Image = screenshot.buffer.toString('base64');
 
   const response = await client.chat.completions.create({
-    model: config.model?.includes('vision') ? config.model : 'gpt-4o',
+    model: process.env.OPENAI_VISION_MODEL || (config.model?.includes('vision') ? config.model : 'gpt-4o'),
     messages: [
       {
         role: 'system',
