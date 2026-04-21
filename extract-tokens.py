@@ -224,7 +224,7 @@ def parse_typography(content: str) -> dict:
                 "fontWeight": row.get("Weight", "").strip(),
                 "lineHeight": row.get("Line Height", "").strip(),
             },
-            "$type": "typography",
+            "$type": "any",
         }
     return tokens
 
@@ -240,7 +240,7 @@ def parse_components(content: str) -> dict:
     for name_raw, usage in blocks:
         name = re.sub(r"\s*\([^)]+\)", "", name_raw).strip()
         if name:
-            tokens[f"component/{name}"] = {"$value": usage.strip(), "$type": "component"}
+            tokens[f"component/{name}"] = {"$value": usage.strip(), "$type": "any", "$extensions": {"com/design-tokens/type": "component"}}
     return tokens
 
 
@@ -261,7 +261,7 @@ def parse_spacing(content: str) -> dict:
             unit = m.group(3) or "px"
             tokens[f"spacing/{name}"] = {
                 "$value": f"{val}{unit}",
-                "$type": "spacing",
+                "$type": "dimension",
             }
     return tokens
 
@@ -283,7 +283,7 @@ def parse_border_radius(content: str) -> dict:
             unit = m.group(3) or "px"
             tokens[f"radius/{name}"] = {
                 "$value": f"{val}{unit}",
-                "$type": "borderRadius",
+                "$type": "border-radius",
             }
     return tokens
 
@@ -320,7 +320,7 @@ def parse_breakpoints(content: str) -> dict:
             name = row.get("Name", "").strip().lower()
             val = row.get("Value", "").strip()
             if name and val:
-                tokens[f"breakpoint/{name}"] = {"$value": val, "$type": "breakpoint"}
+                tokens[f"breakpoint/{name}"] = {"$value": val, "$type": "dimension"}
         return tokens
 
     # Try list/key-value format
@@ -332,7 +332,7 @@ def parse_breakpoints(content: str) -> dict:
         if m:
             tokens[f"breakpoint/{m.group(1).lower()}"] = {
                 "$value": f"{m.group(2)}{m.group(3) or 'px'}",
-                "$type": "breakpoint",
+                "$type": "dimension",
             }
 
     # Fallback: inline backtick values
@@ -356,7 +356,7 @@ def parse_z_index(content: str) -> dict:
         if m:
             tokens[f"z-index/{m.group(1).lower()}"] = {
                 "$value": int(m.group(2)),
-                "$type": "zIndex",
+                "$type": "dimension",
             }
     return tokens
 
@@ -374,7 +374,7 @@ def parse_animation(content: str) -> dict:
         if m:
             tokens[f"animation/{m.group(1).lower()}"] = {
                 "$value": m.group(2).strip(),
-                "$type": "animation",
+                "$type": "any",
             }
     return tokens
 
@@ -387,12 +387,13 @@ def parse_layout(content: str) -> dict:
     for line in section.split("\n"):
         m = re.match(r"- \*\*(.+?)\*\* \((.+?)\): (.+)", line.strip())
         if m:
-            tokens[f"layout/{m.group(1).strip()}"] = {
+           tokens[f"layout/{m.group(1).strip()}"] = {
                 "$value": {
                     "tag": m.group(2).strip(),
                     "usage": m.group(3).strip(),
                 },
-                "$type": "layout",
+                "$type": "any",
+                "$extensions": { "com/design-tokens/type": "layout" },
             }
     return tokens
 
@@ -405,10 +406,10 @@ def parse_principles(content: str) -> dict:
     if lines and all(l.startswith("- ") for l in lines):
         tokens = {}
         for i, p in enumerate(lines):
-            tokens[f"principle/{i}"] = {"$value": p[2:].strip(), "$type": "principle"}
+            tokens[f"principle/{i}"] = {"$value": p[2:].strip(), "$type": "any"}
         return tokens
     if lines:
-        return {"$value": "\n".join(lines), "$type": "principle"}
+        return {"$value": "\n".join(lines), "$type": "any"}
     return {}
 
 
@@ -426,7 +427,7 @@ def parse_animation(content: str) -> dict:
         if m:
             tokens[f"animation/{m.group(1).lower()}"] = {
                 "$value": m.group(2).strip(),
-                "$type": "animation",
+                "$type": "any",
             }
     return tokens
 
@@ -444,7 +445,7 @@ def parse_reference_md(source: str | Path) -> dict:
     content = source.read_text(encoding="utf-8")
 
     tokens = {
-        "$schema": "https://design-tokens.github.io/design-token-schema/",
+        "$schema": "https://www.designtokens.org/TR/drafts/format/",
         "version": "1.0.0",
         "source": str(source),
     }
